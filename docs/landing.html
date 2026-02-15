@@ -1,16 +1,12 @@
 <h1>🐮</h1>
 
-<h3>🍭 Hello poth kutti. For the love of moo, music and the number 69!</h3>
+<h3 style="text-align: center;">🍭 Hello poth kutti. For the love of moo, music and the number 69!</h3>
 
 <div class="aplayer-wrap">
     <div id="aplayer1"></div>
-    <button onclick="ap1.play()">ap.play()</button>
-    <button onclick="ap1.seek(100)">ap.seek(100)</button>
-    <button onclick="ap1.pause()">ap.pause()</button>
-    <button onclick="ap1.toggle()">ap.toggle()</button>
-    <button onclick="ap1.volume(0.1)">ap.volume(0.1)</button>
+
 </div>
-<div id="aplayer0"></div>
+
 
 <style>
     h1 {
@@ -75,5 +71,52 @@
         width: 600px;
         max-width: 100%;
         margin: 20px 0 40px;
+    }
+
+    /* Custom APlayer Controls */
+    .aplayer-music {
+        position: relative;
+        padding-right: 80px !important;
+        /* Make room for buttons */
+    }
+
+    .aplayer-ext-controls {
+        position: absolute !important;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        padding-right: 15px;
+        gap: 5px;
+        z-index: 999;
+    }
+
+    .aplayer-ext-btn {
+        cursor: pointer;
+        color: #777;
+        width: 24px;
+        height: 24px;
+        opacity: 0.9;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .aplayer-ext-btn:hover {
+        opacity: 1;
+        color: #333;
+        transform: scale(1.1);
+    }
+
+    .aplayer-ext-btn svg {
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
+    }
+
+    .aplayer-ext-btn svg path {
+        fill: currentColor;
     }
 </style>
