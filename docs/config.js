@@ -51,14 +51,22 @@ function clearPlayer() {
 
 const PLAYER_KEY = "moosick_player_state";
 
-function savePlayerState() {
-    if (!window.ap1) return;
+let saveTimer = null;
+let restored = false;
+let ready = false;
 
-    localStorage.setItem(PLAYER_KEY, JSON.stringify({
-        index: window.ap1.list.index,
-        volume: window.ap1.audio.volume,
-        time: window.ap1.audio.currentTime
-    }));
+function savePlayerState() {
+    if (!window.ap1 || !ready) return;
+
+    clearTimeout(saveTimer);
+
+    saveTimer = setTimeout(() => {
+        localStorage.setItem(PLAYER_KEY, JSON.stringify({
+            index: window.ap1.list.index,
+            volume: window.ap1.audio.volume,
+            time: window.ap1.audio.currentTime || 0
+        }));
+    }, 500);
 }
 
 function loadPlayerState() {
@@ -67,23 +75,31 @@ function loadPlayerState() {
 }
 
 function restoreState() {
+    if (restored || !window.ap1) return;
+    restored = true;
+
     const saved = loadPlayerState();
     console.log("saved", saved);
-    if (!saved || !window.ap1) return;
 
-    if (typeof saved.index === "number") {
-        window.ap1.list.switch(saved.index);
-    }
+    if (!saved) return;
 
-    if (typeof saved.volume === "number") {
-        window.ap1.volume(saved.volume, true);
-    }
-
-    window.ap1.on('loadedmetadata', () => {
-        if (typeof saved.time === "number") {
-            window.ap1.audio.currentTime = saved.time;
+    const apply = () => {
+        if (typeof saved.volume === "number") {
+            window.ap1.volume(saved.volume, true);
         }
-    });
+
+        if (typeof saved.index === "number") {
+            window.ap1.list.switch(saved.index);
+        }
+
+        setTimeout(() => {
+            if (typeof saved.time === "number") {
+                window.ap1.seek(saved.time);
+            }
+        }, 800);
+    };
+
+    apply();
 }
 
 function aplayer1() {
@@ -569,12 +585,14 @@ function aplayer1() {
             }]
     });
     initPlayerControls();
+    ready = true;
+
     window.ap1.on('play', savePlayerState);
     window.ap1.on('pause', savePlayerState);
     window.ap1.on('volumechange', savePlayerState);
-    window.ap1.on('listswitch', savePlayerState);
+    window.ap1.on('listswitch', () => setTimeout(savePlayerState, 300));
 
-    setTimeout(restoreState, 300);
+    setTimeout(restoreState, 1200);
 }
 
 function initPlayerControls() {
